@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Terraform Format Check') {
+            steps {
+                sh 'terraform fmt -check -recursive'
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                sh 'terraform init -backend=false'
+            }
+        }
+
+        stage('Terraform Validate') {
+            steps {
+                sh 'terraform validate'
+            }
+        }
+    }
+}
