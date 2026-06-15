@@ -1,11 +1,17 @@
 pipeline {
     agent any
 
-    stages {
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+        AWS_DEFAULT_REGION    = 'ap-south-1'
+    }
 
+    stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                git branch: 'main',
+                    url: 'https://github.com/Hafsa-4/terraform_task.git'
             }
         }
 
@@ -21,10 +27,26 @@ pipeline {
             }
         }
 
+        stage('Approval') {
+            steps {
+                input message: 'Approve to deploy to AWS?',
+                      ok: 'Yes, Deploy Now'
+            }
+        }
+
         stage('Terraform Apply') {
             steps {
                 sh 'terraform apply -auto-approve tfplan'
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment complete - S3 bucket created!'
+        }
+        failure {
+            echo 'Deployment failed - check logs.'
         }
     }
 }
