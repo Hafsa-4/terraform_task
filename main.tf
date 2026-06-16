@@ -5,6 +5,7 @@ resource "aws_s3_bucket" "demo" {
     Name        = "terraform-task-demo"
     Environment = "dev"
     Owner       = "Hafsa"
+
   }
 }
 #end of code
